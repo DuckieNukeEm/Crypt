@@ -1,0 +1,133 @@
+def CaesarOption():
+	#this is the menu for the caesar options
+	print("Hail great Caesar, which option would you like to use?")
+	print "1: Caesar cypher using ASCII"
+	print "2: Caesar Cypher using alphabet"
+	print "3: Crack Caesar cypher using ASCII"
+	print "4: Crack	Caesar cypher using alphabet"
+	print "5: Exit"
+	answer = raw_input("?>")
+	if answer == '1':
+		plaintext = raw_input("Please print your plain text here: ")
+		key = int(raw_input("What key do you want to use? "))
+		print "This is the plain text: \n %s \n" % (plaintext)
+		print "this is the cypher text:\n %s" % (CaesarCipherASCII(plaintext, key))
+		exit
+	elif answer == '2':
+		plaintext = raw_input("Please print your plain text here: ").lower()
+		key = int(raw_input("What key do you want to use? "))
+		print "This is the plain text: \n %s \n" % (plaintext)
+		print "this is the cypher text:\n %s" % (CaesarCipher(plaintext, key))
+		exit
+	elif answer == '3':
+		cypher = raw_input("please input the cypher text here: ")
+		print "Offset : Crack"
+		for key in range(-255,0):
+			print "%r: %r" % (key, CaesarCipherASCII(cypher,key))	
+		exit
+	elif answer == '4':
+		cypher = raw_input("please input the cypher text here: ").lower()
+		print "Offset : Crack"
+		for key in range(-25,0):
+			print "%r: %r" % (key, CaesarCipher(cypher,key))
+		exit
+	elif answer == '5':
+		print 'Adios! Cesar'
+		return none
+	else:
+		print "eh? What was that? didn't hear you!"
+
+def AlphaNumDict():
+	#creating two dictionarys, one that will map chars to a number
+	#and another that will map number to chars
+	alphabet = list"abcdefghijklmnopqrstuvwxyz")
+	alphanum = {}
+	numalpha = {}
+	index = 0
+	for char in alphabet:
+		alphanum[char] = index
+		numalpha[index] = char
+		index = index + 1
+	return (alphanum, numalpha)
+	
+def CaesarCipherASCII( plaintext, key):
+	#the purpose of this is to either create a Caesar Cipher or decrypt on by moving each letter
+	# key number of places (if key is < 0, then we are decrypting it)
+	#this cypher uses all 256 characters in ASCII
+	plaintextlist = list(plaintext)
+	cypherlist = []
+	
+	for char in plaintextlist:
+		cypherlist.append(chr((ord(char) + key) % 256))
+		
+	return ''.join(cypherlist)
+
+def CaesarCipher(plaintext, key):
+	# the purpose of this is to either create a Caesar Cipher or decrypt on by moving each letter
+	# key number of places (if key is < 0, then we are decrypting it)
+	# this cypher uses on 26 characters of the alphabet
+	plaintextlist = list(plaintext)
+	cypherlist = []
+	alphanum, numalpha = AlphaNumDict()
+	for char in plaintextlist:
+		if char.isdigit():
+			cypherlist.append(str((int(char) + key) % 26))
+		elif char in alphanum:
+			cypherlist.append(numalpha[(alphanum[char] + key) % 26])
+		else:
+			cypherlist.append(char)
+	return ''.join(cypherlist)
+def AlphaAlphaDict():
+	#generates a dict with the same key and value pair
+	alphabet = list("abcdefghijklmnopqrstuvwxyz")
+	AlphaAlpha = {}
+	for char in alphabet:
+		AlphaAlpha[char] = char
+	return AlphaAlpha
+	
+def SubOption():
+	#This is for the substitution cypher subscreen
+	print "OOOOOOOO, panzy, here is the SUBSTITUION OPTIONS"
+	print "1. Create a substitution cypher from plaintext"
+	print "2. Crack a substitution"
+	print "3. exit"
+	ans = raw_input("?> ")
+	if ans == '1':
+		SubCypher()
+		exit
+	exit
+def SubCypher():
+	#This does a substitution method
+	alpha = AlphaAlphaDict();
+	while True:
+		print alpha.keys()
+		print alpha.values()
+		print "type qq to quit"
+		key = raw_input("What character do you want to replace? > ").lower()
+		value = raw_input("And what do you want to replace it with? >").lower()
+		if key == 'qq':
+			break
+		alpha[key] = value
+	plaintext = raw_input("Please print your plain text here: ").lower()
+	plaintextlist = list(plaintext)
+	cypherlist = []
+	for char in plaintextlist:
+		cypherlist.append(alpha[char])
+	return ''.joincypherlist
+	
+print "Welcome to the basic Cypher Crack, how may I help you?"
+print "1: Caesar Options"
+print "2: Simple substituion options"
+ans =  raw_input("?> ")
+if ans == '1':
+	CaesarOption()
+	exit
+else:
+	exit
+
+
+	
+
+
+
+	
