@@ -1,35 +1,58 @@
+class CypherText:
+	kind = 'Cypher'
+	def __init__(self, plaintext, method='', key=0, cypher=''):
+		self.plaintext = plaintext
+		self.method = method
+		self.key = key
+		self.cypher = cypher
+		
+	def flip(self):
+		NewPlainText = self.cypher
+		NewCypher = self.plaintext
+		self.plaintext = NewPlainText
+		self.cypher = NewCypher
+
 def CaesarOption():
-	#this is the menu for the caesar options
+	#this is the menu for the Caesar options
 	print("Hail great Caesar, which option would you like to use?")
-	print "1: Caesar cypher using ASCII"
+	print "1: Caesar Cypher using ASCII"
 	print "2: Caesar Cypher using alphabet"
 	print "3: Crack Caesar cypher using ASCII"
-	print "4: Crack	Caesar cypher using alphabet"
+	print "4: Crack Caesar cypher using alphabet"
 	print "5: Exit"
 	answer = raw_input("?>")
 	if answer == '1':
-		plaintext = raw_input("Please print your plain text here: ")
-		key = int(raw_input("What key do you want to use? "))
-		print "This is the plain text: \n %s \n" % (plaintext)
-		print "this is the cypher text:\n %s" % (CaesarCipherASCII(plaintext, key))
+		#SHIT just realized the CaesarCipherASCII does the same as CaesarCipher with Upper = True
+		d = CypherText(raw_input("Please print your plain text here: "), "CaesarCipherASCII")
+		d.key = int(raw_input("What key do you want to use? "))
+		d.cypher = CaesarCipher(d.plaintext, d.key, IsUpper(d.plaintext))
+		print "This is the plain text: \n %s \n This is the Cypher Text:\n%s" % (d.plaintext, d.cypher)
 		exit
 	elif answer == '2':
-		plaintext = raw_input("Please print your plain text here: ").lower()
-		key = int(raw_input("What key do you want to use? "))
-		print "This is the plain text: \n %s \n" % (plaintext)
-		print "this is the cypher text:\n %s" % (CaesarCipher(plaintext, key))
+		d = CypherText(raw_input("Please print your plain text here: "), "CaesarCipher")
+		d.key = int(raw_input("What key do you want to use? "))
+		d.cypher = CaesarCipher(d.plaintext, d.key, IsUpper(d.plaintext))
+		print "This is the plain text: \n %s \n This is the Cypher Text:\n%s" % (d.plaintext, d.cypher)
 		exit
 	elif answer == '3':
-		cypher = raw_input("please input the cypher text here: ")
+		d = Cyphertext(raw_input("please input the cypher text here: "), "CeasarCrackASCII")
 		print "Offset : Crack"
 		for key in range(-255,0):
-			print "%r: %r" % (key, CaesarCipherASCII(cypher,key))	
+			d.key = key
+			d.cypher = CaesarCipherASCII(d.plaintext,d.key)
+			print "%r: %r" % (d.key, d.cypher)
 		exit
 	elif answer == '4':
-		cypher = raw_input("please input the cypher text here: ").lower()
+		d = Cyphertext(raw_input("please input the cypher text here: "), "CeasarCrack")
 		print "Offset : Crack"
-		for key in range(-25,0):
-			print "%r: %r" % (key, CaesarCipher(cypher,key))
+		if IsUpper(d.plaintext):
+			Rng = range(-51,0)
+		else:
+			Rng = range(-25,0)
+		for key in Rng:
+			d.key = key
+			d.cypher = CaesarCipher(d.plaintext,d.key,IsUpper(d.plaintext))
+			print "%r: %r" % (d.key, d.cypher )
 		exit
 	elif answer == '5':
 		print 'Adios! Cesar'
@@ -37,10 +60,13 @@ def CaesarOption():
 	else:
 		print "eh? What was that? didn't hear you!"
 
-def AlphaNumDict():
+def AlphaNumDict(UpCase = False):
 	#creating two dictionarys, one that will map chars to a number
 	#and another that will map number to chars
-	alphabet = list"abcdefghijklmnopqrstuvwxyz")
+	alphabet = "abcdefghijklmnopqrstuvwxyz"
+	if UpCase:
+		alphabet = alphabet + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	alphabet = list(alphabet)
 	alphanum = {}
 	numalpha = {}
 	index = 0
@@ -49,10 +75,10 @@ def AlphaNumDict():
 		numalpha[index] = char
 		index = index + 1
 	return (alphanum, numalpha)
-	
+
 def CaesarCipherASCII( plaintext, key):
-	#the purpose of this is to either create a Caesar Cipher or decrypt on by moving each letter
-	# key number of places (if key is < 0, then we are decrypting it)
+	#the purpose of this is to either create a Caesar Cipher or decrypt one by moving each letter
+	#key number of places (if key is < 0, then we are moving backwards it)
 	#this cypher uses all 256 characters in ASCII
 	plaintextlist = list(plaintext)
 	cypherlist = []
@@ -62,29 +88,39 @@ def CaesarCipherASCII( plaintext, key):
 		
 	return ''.join(cypherlist)
 
-def CaesarCipher(plaintext, key):
+def CaesarCipher(plaintext, key, UpCase = False):
 	# the purpose of this is to either create a Caesar Cipher or decrypt on by moving each letter
 	# key number of places (if key is < 0, then we are decrypting it)
 	# this cypher uses on 26 characters of the alphabet
 	plaintextlist = list(plaintext)
 	cypherlist = []
-	alphanum, numalpha = AlphaNumDict()
+	alphanum, numalpha = AlphaNumDict(UpCase)
 	for char in plaintextlist:
 		if char.isdigit():
-			cypherlist.append(str((int(char) + key) % 26))
+			cypherlist.append(str((int(char) + key) % 10))
 		elif char in alphanum:
-			cypherlist.append(numalpha[(alphanum[char] + key) % 26])
+			cypherlist.append(numalpha[(alphanum[char] + key) % (len(alphanum)-1)])
 		else:
 			cypherlist.append(char)
 	return ''.join(cypherlist)
-def AlphaAlphaDict():
+
+def AlphaAlphaDict(Upcase = False):
 	#generates a dict with the same key and value pair
-	alphabet = list("abcdefghijklmnopqrstuvwxyz")
+	alphabet = "abcdefghijklmnopqrstuvwxyz"
+	if Upcase:
+		alphabet = alphabet + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	alphabet = list(alphabet)
 	AlphaAlpha = {}
 	for char in alphabet:
 		AlphaAlpha[char] = char
 	return AlphaAlpha
-	
+
+def IsUpper(Str):
+	#Checks if there are uppper case letters in a string
+	if Str.find(Str.lower()) == Str.find(Str.upper()) or Str.find(Str.upper()) == 0:
+		return True
+	return False
+
 def SubOption():
 	#This is for the substitution cypher subscreen
 	print "OOOOOOOO, panzy, here is the SUBSTITUION OPTIONS"
@@ -93,41 +129,77 @@ def SubOption():
 	print "3. exit"
 	ans = raw_input("?> ")
 	if ans == '1':
-		SubCypher()
+		d = CypherText(raw_input("Please print your plain text here: "), "Substitution", AlphaAlphaDict())
+		d.cypher, d.key = SubCypher(d.plaintext, d.key)
+		print("Here is the original Text: \n %r \n Here is the cypher: \n %r") % (d.plaintext, d.cypher)
+		print d.key
 		exit
 	exit
-def SubCypher():
+def SubCypher(plaintext, alpha={}, guess=True):
 	#This does a substitution method
-	alpha = AlphaAlphaDict();
-	while True:
-		print alpha.keys()
-		print alpha.values()
+	#it returns the cypher and the dictonary used
+	plaintextlist = list(plaintext)
+	map = {}
+	while guess:
+		print map.keys()
+		print map.values()
 		print "type qq to quit"
-		key = raw_input("What character do you want to replace? > ").lower()
-		value = raw_input("And what do you want to replace it with? >").lower()
+		key = raw_input("What character do you want to replace? > ")
+		if key == 'qq':
+			break
+		value = raw_input("And what do you want to replace it with? >")
 		if key == 'qq':
 			break
 		alpha[key] = value
-	plaintext = raw_input("Please print your plain text here: ").lower()
-	plaintextlist = list(plaintext)
+		map[key] = value
 	cypherlist = []
 	for char in plaintextlist:
 		cypherlist.append(alpha[char])
-	return ''.joincypherlist
+	return (''.join(cypherlist), alpha)
+	
+def SubDecrypt(cypher):
+	words={}
+	guessword = raw_input("What word do you believe is in the cypher text? ")
+	guessnum, guessmap = WordMapping(guessword)
+	Rng = range(0,len(cypher) - len(guessword))
+	for i in Rng:
+		Cyph, Cyphmap = WordMapping(cypher[i:i+len(guessword)])
+		if Cyph == guessnum:
+			print "We have a match! Cypher is %r \t Guessword is %r" % (cypher[i:1+len(guessword)], guessword)
+			Cyph = list(cyph)
+			
+			
+		
+		
+def WordMapping(Str)
+	Str = list(Str)
+	Outstr = ''
+	Map = {}
+	Rmap = {}
+	i = 0
+	for char in Str:
+		if not Map.has_key(char):
+			i = i + 1
+		Map[char] = Map.get(char,i)
+		Rmap[i] = char
+		OutStr = OutStr + Map[char]
+	return (''.join(OutStr), Rmap)
+
+
+
+
+
 	
 print "Welcome to the basic Cypher Crack, how may I help you?"
 print "1: Caesar Options"
-print "2: Simple substituion options"
+print "2: Simple substitution options"
+print "3: Test the Cypher class"
 ans =  raw_input("?> ")
 if ans == '1':
 	CaesarOption()
 	exit
+elif ans == '2':
+	SubOption()
+	exit
 else:
 	exit
-
-
-	
-
-
-
-	
