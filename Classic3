@@ -1,0 +1,153 @@
+def raw_input(x='');
+	return input(x)
+
+def CaesarOption():
+	#this is the menu for the caesar options
+	print("Hail great Caesar, which option would you like to use?")
+	print("1: Caesar cypher using ASCII")
+	print("2: Caesar Cypher using alphabet")
+	print("3: Crack Caesar cypher using ASCII")
+	print("4: Crack Caesar cypher using alphabet")
+	print("5: Exit")
+	answer = raw_input("?>")
+	if answer == '1':
+		plaintext = raw_input("Please print your plain text here: ")
+		key = int(raw_input("What key do you want to use? "))
+		print("This is the plain text: \n %s \n") % (plaintext)
+		print("this is the cypher text:\n %s") % (CaesarCipherASCII(plaintext, key))
+		exit()
+	elif answer == '2':
+		plaintext = raw_input("Please print your plain text here: ")
+		key = int(raw_input("What key do you want to use? "))
+		print("This is the plain text: \n %s \n") % (plaintext)
+		print("this is the cypher text:\n %s") % (CaesarCipher(plaintext, key, UpperExists(plaintext)))
+		exit()
+	elif answer == '3':
+		cypher = raw_input("please raw_input the cypher text here: ")
+		print("Offset : Crack")
+		for key in range(-255,0):
+			print ("%r: %r") % (key, CaesarCipherASCII(cypher,key))	
+		exit()
+	elif answer == '4':
+		cypher = raw_input("please raw_input the cypher text here: ")
+		if UpperExists(cypher):
+			Rng = range(-51,0)
+		else:
+			Rng = range(-25,0)
+		print("Offset : Crack")
+		for key in Rng:
+			print ("%r: %r") % (key, CaesarCipher(cypher,key, UpperExists(cypher)))
+		exit()
+	elif answer == '5':
+		print('Adios! Ceasar')
+		return none
+	else:
+		print ("eh? What was that? didn't hear you!")
+
+def UpperExists(Str):
+	if Str.find(Str.upper()) == 0 or str.find(str.lower()) == Str.find(Str.upper()) :
+		return True
+	return False
+
+def AlphaNumDict(Upper=False):
+	#creating two dictionary, one that will map chars to a number
+	#and another that will map number to chars
+	alphabet = "abcdefghijklmnopqrstuvwxyz"
+	if Upper:
+		alphabet = alphabet + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	alphabet = list(alphabet)
+	alphanum = {}
+	numalpha = {}
+	index = 0
+	for char in alphabet:
+		alphanum[char] = index
+		numalpha[index] = char
+		index = index + 1
+	return (alphanum, numalpha)
+
+def CaesarCipherASCII( plaintext, key):
+	#the purpose of this is to either create a Caesar Cipher or decrypt on by moving each letter
+	# key number of places (if key is < 0, then we are decrypting it)
+	#this cypher uses all 256 characters in ASCII
+	plaintextlist = list(plaintext)
+	cypherlist = []
+	
+	for char in plaintextlist:
+		cypherlist.append(chr((ord(char) + key) % 256))
+		
+	return ''.join(cypherlist)
+
+def CaesarCipher(plaintext, key, Upper = False):
+	# the purpose of this is to either create a Caesar Cipher or decrypt on by moving each letter
+	# key number of places (if key is < 0, then we are decrypting it)
+	# this cypher uses on 26 characters of the alphabet
+	# UPPER is a variable that adds in uppercase to the file
+	plaintextlist = list(plaintext)
+	cypherlist = []
+	alphanum, numalpha = AlphaNumDict(Upper)
+	for char in plaintextlist:
+		if char.isdigit():
+			cypherlist.append(str((int(char) + key) % (len(alphanum)-1) ))
+		elif char in alphanum:
+			cypherlist.append(numalpha[(alphanum[char] + key) % (len(alphanum)-1)])
+		else:
+			cypherlist.append(char)
+	return ''.join(cypherlist)
+
+def AlphaAlphaDict():
+	#generates a dict with the same key and value pair
+	alphabet = list("abcdefghijklmnopqrstuvwxyz")
+	AlphaAlpha = {}
+	for char in alphabet:
+		AlphaAlpha[char] = char
+	return AlphaAlpha
+
+def SubOption():
+	#This is for the substitution cypher subscreen
+	print ("OOOOOOOO, panzy, here is the SUBSTITUION OPTIONS")
+	print ("1. Create a substitution cypher from plaintext")
+	print ("2. Crack a substitution")
+	print ("3. exit")
+	ans = raw_input("?> ")
+	if ans == '1':
+		plaintext = raw_input("Please print your plain text here: ")
+		SubCypher()
+		exit
+	exit
+
+def SubCypher(plaintext):
+	#This does a substitution method
+	alpha = AlphaAlphaDict();
+	while True:
+		print(alpha.keys())
+		print(alpha.values())
+		print("type qq to quit")
+		key = raw_input("What character do you want to replace? > ").lower()
+		value = raw_input("And what do you want to replace it with? >").lower()
+		if key == 'qq':
+			break
+		alpha[key] = value
+	plaintext = raw_input("Please print your plain text here: ").lower()
+	plaintextlist = list(plaintext)
+	cypherlist = []
+	for char in plaintextlist:
+		cypherlist.append(alpha[char])
+	return ''.joincypherlist
+
+if __name__ == "__main__":
+	print ("Welcome to the basic Cypher Crack, how may I help you?")
+	print ("1: Caesar Options")
+	print ("2: Simple substitution options")
+	Ans = raw_input("?> ")
+	if Ans == '1':
+		CaesarOption()
+		exit
+	else:
+		exit
+
+
+	
+
+
+
+	
