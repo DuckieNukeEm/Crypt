@@ -130,16 +130,14 @@ def SubOption():
 	ans = raw_input("?> ")
 	if ans == '1':
 		d = CypherText(raw_input("Please print your plain text here: "), "Substitution", AlphaAlphaDict())
-		d.cypher, d.key = SubCypher(d.plaintext, d.key)
+		d.cypher, d.key = SubCypher(d.plaintext, SubAlpha())
 		print("Here is the original Text: \n %r \n Here is the cypher: \n %r") % (d.plaintext, d.cypher)
 		print d.key
 		exit
 	exit
-def SubCypher(plaintext, alpha={}, guess=True):
-	#This does a substitution method
-	#it returns the cypher and the dictonary used
-	plaintextlist = list(plaintext)
-	map = {}
+	
+def SubAlpha(alpha={}):
+	map = alpha
 	while guess:
 		print map.keys()
 		print map.values()
@@ -152,6 +150,12 @@ def SubCypher(plaintext, alpha={}, guess=True):
 			break
 		alpha[key] = value
 		map[key] = value
+	return alpha
+	
+def SubCypher(plaintext, alpha={}):
+	#This does a substitution method
+	#it returns the cypher and the dictionary used
+	plaintextlist = list(plaintext)
 	cypherlist = []
 	for char in plaintextlist:
 		cypherlist.append(alpha[char])
