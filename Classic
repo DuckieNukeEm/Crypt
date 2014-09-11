@@ -65,7 +65,7 @@ def AlphaNumDict(UpCase = False):
 	#and another that will map number to chars
 	alphabet = "abcdefghijklmnopqrstuvwxyz"
 	if UpCase:
-		alphabet = alphabet + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		alphabet = alphabet + alphabet.upper()
 	alphabet = list(alphabet)
 	alphanum = {}
 	numalpha = {}
@@ -108,7 +108,7 @@ def AlphaAlphaDict(Upcase = False):
 	#generates a dict with the same key and value pair
 	alphabet = "abcdefghijklmnopqrstuvwxyz"
 	if Upcase:
-		alphabet = alphabet + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		alphabet = alphabet + alphabet.upper()
 	alphabet = list(alphabet)
 	AlphaAlpha = {}
 	for char in alphabet:
@@ -120,7 +120,15 @@ def IsUpper(Str):
 	if Str.find(Str.lower()) == Str.find(Str.upper()) or Str.find(Str.upper()) == 0:
 		return True
 	return False
-
+def partword(Word):
+	i=0
+	Rng = range(i,len(Word))
+	PrintWord = ''
+	while i <= len(Word):
+		PrintWord = PrintWord + Word[i:i+5] + ' '
+		i = i + 6
+	print PrintWord
+	
 def SubOption():
 	#This is for the substitution cypher subscreen
 	print "OOOOOOOO, panzy, here is the SUBSTITUION OPTIONS"
@@ -136,9 +144,8 @@ def SubOption():
 		print d.key
 		exit
 	elif ans == '2':
-		looper = raw_input("Welcome, press enter to proceed")
 		#d = CypherText(raw_input("please put in the cypher text: "),"Crack Substitution",{})
-		d = CypherText("yjratrdofrmyesdlozzrfurdyrtfsu","Crack Substitution",{})
+		d = CypherText("rgjjgmvktotzpgtstbgpcatjwpgocmgjs","Crack Substitution",{})
 		while True:
 			looper = raw_input("Would you like to guess a few translations? :").lower()
 			if looper in ('y','ye','yes',' y',' ye',' yes','y ','ye ','yes '):
@@ -151,6 +158,7 @@ def SubOption():
 		exit
 	
 def SubAlpha(alpha={}):
+	#allows users to manually input values into alpha
 	map = alpha
 	while True:
 		print map.keys()
@@ -172,7 +180,7 @@ def SubCypher(plaintext, alpha={}):
 	plaintextlist = list(plaintext)
 	cypherlist = []
 	for char in plaintextlist:
-		cypherlist.append(alpha.get(char,char))
+		cypherlist.append(alpha.get(char,' '))
 	return (''.join(cypherlist))
 	
 def BuildAlpha(cypher, word, alpha={}):
@@ -199,10 +207,11 @@ def SubDecrypt(cypher, alpha = {},plaintext=''):
 				print "Looks like we have a match error, continuing down the path"
 				continue
 			print "match!"
-			print "here is translation thus far:"
-			print cypher
-			plaintext = SubCypher(cypher, alpha)
-			print plaintext
+	
+	print "here is translation thus far:"
+	partword(cypher)
+	plaintext = SubCypher(cypher, alpha)
+	partword(plaintext)
 			
 	return ( plaintext, alpha)
 			
