@@ -130,15 +130,29 @@ def SubOption():
 	ans = raw_input("?> ")
 	if ans == '1':
 		d = CypherText(raw_input("Please print your plain text here: "), "Substitution", AlphaAlphaDict())
-		d.cypher, d.key = SubCypher(d.plaintext, SubAlpha())
+		d.key = SubAlpha()
+		d.cypher = SubCypher(d.plaintext, d.key)
 		print("Here is the original Text: \n %r \n Here is the cypher: \n %r") % (d.plaintext, d.cypher)
 		print d.key
 		exit
-	exit
+	elif ans == '2':
+		looper = raw_input("Welcome, press enter to proceed")
+		#d = CypherText(raw_input("please put in the cypher text: "),"Crack Substitution",{})
+		d = CypherText("yjratrdofrmyesdlozzrfurdyrtfsu","Crack Substitution",{})
+		while True:
+			looper = raw_input("Would you like to guess a few translations? :").lower()
+			if looper in ('y','ye','yes',' y',' ye',' yes','y ','ye ','yes '):
+				d.key = SubAlpha(d.key)
+			d.cypher, d.key = SubDecrypt(d.plaintext, d.key,d.cypher)
+			if raw_input("Keep going? ").lower() in ('n','no',' n',' no','n ','no '):
+				break
+		exit
+	else:
+		exit
 	
 def SubAlpha(alpha={}):
 	map = alpha
-	while guess:
+	while True:
 		print map.keys()
 		print map.values()
 		print "type qq to quit"
@@ -158,40 +172,57 @@ def SubCypher(plaintext, alpha={}):
 	plaintextlist = list(plaintext)
 	cypherlist = []
 	for char in plaintextlist:
-		cypherlist.append(alpha[char])
-	return (''.join(cypherlist), alpha)
+		cypherlist.append(alpha.get(char,char))
+	return (''.join(cypherlist))
 	
-def SubDecrypt(cypher):
-	words={}
+def BuildAlpha(cypher, word, alpha={}):
+	#checks to see if the cypher word is mapped to the proper word or blanke
+	#then updates aplha with a new mapping or returns FALSE if a conflict arises
+	for i in range(0,len(cypher)):
+		if not alpha.has_key(cypher[i]) or alpha[cypher[i]] == word[i]:
+			alpha[cypher[i]]=alpha.get(cypher[i],word[i])
+		else:
+			return False
+	return alpha
+		
+def SubDecrypt(cypher, alpha = {},plaintext=''):
 	guessword = raw_input("What word do you believe is in the cypher text? ")
 	guessnum, guessmap = WordMapping(guessword)
-	Rng = range(0,len(cypher) - len(guessword))
+	Rng = range(0,len(cypher) - len(guessword)+1)
 	for i in Rng:
+		
 		Cyph, Cyphmap = WordMapping(cypher[i:i+len(guessword)])
 		if Cyph == guessnum:
-			print "We have a match! Cypher is %r \t Guessword is %r" % (cypher[i:1+len(guessword)], guessword)
-			Cyph = list(cyph)
+			print "We have a match! Cypher is %r \t Guess-word is %r" % (cypher[i:i+len(guessword)], guessword)
+			print "Checking to see if it matches with the current dictionary:"
+			if BuildAlpha(cypher[i:i+len(guessword)], guessword, alpha) == False:
+				print "Looks like we have a match error, continuing down the path"
+				continue
+			print "match!"
+			print "here is translation thus far:"
+			print cypher
+			plaintext = SubCypher(cypher, alpha)
+			print plaintext
+			
+	return ( plaintext, alpha)
+			
 			
 			
 		
 		
-def WordMapping(Str)
-	Str = list(Str)
-	Outstr = ''
+def WordMapping(String):
+	String = list(String)
+	OutStr = ''
 	Map = {}
 	Rmap = {}
-	i = 0
-	for char in Str:
+	i = -1
+	for char in String:
 		if not Map.has_key(char):
 			i = i + 1
-		Map[char] = Map.get(char,i)
+		Map[char] = str(Map.get(char,i))
 		Rmap[i] = char
 		OutStr = OutStr + Map[char]
 	return (''.join(OutStr), Rmap)
-
-
-
-
 
 	
 print "Welcome to the basic Cypher Crack, how may I help you?"
