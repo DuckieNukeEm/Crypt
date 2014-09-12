@@ -11,122 +11,99 @@ class CypherText:
 		NewCypher = self.plaintext
 		self.plaintext = NewPlainText
 		self.cypher = NewCypher
-
+	def AlphaABC(self, ABC = False, round=False):
+		if not round:
+			if ABC:
+				self.key = {a: a for a in list("abcdefghijklmnopqrstuvwxyz"+"ABCDEFGHIJKLMNOPQRSTUVWXYZ")}
+			else:
+				self.key = {a: a for a in list("abcdefghijklmnopqrstuvwxyz")}
+		elif round:
+			self.key={}
+			if ABC:
+				i = 0
+				looper = len(round)
+				for char in list("abcdefghijklmnopqrstuvwxyz"+"ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+					self.key[char] = round[i % looper]
+					i = i + 1 
+			else:
+				i = 0
+				looper = len(round)
+				for char in list("abcdefghijklmnopqrstuvwxyz")
+					self.key[char] = round[i % looper]
+					i = i + 1 
+					
+	def AlphaNum(self, ABC = False):
+		abc = "abcdefghijklmnopqrstuvwxyz"
+		
 def CaesarOption():
 	#this is the menu for the Caesar options
 	print("Hail great Caesar, which option would you like to use?")
-	print "1: Caesar Cypher using ASCII"
-	print "2: Caesar Cypher using alphabet"
-	print "3: Crack Caesar cypher using ASCII"
-	print "4: Crack Caesar cypher using alphabet"
-	print "5: Exit"
+	print "1: Caesar Cypher"
+	print "2: Crack Caesar cypher"
+	print "3: Exit"
 	answer = raw_input("?>")
 	if answer == '1':
-		#SHIT just realized the CaesarCipherASCII does the same as CaesarCipher with Upper = True
-		d = CypherText(raw_input("Please print your plain text here: "), "CaesarCipherASCII")
-		d.key = int(raw_input("What key do you want to use? "))
-		d.cypher = CaesarCipher(d.plaintext, d.key, IsUpper(d.plaintext))
-		print "This is the plain text: \n %s \n This is the Cypher Text:\n%s" % (d.plaintext, d.cypher)
-		exit
-	elif answer == '2':
 		d = CypherText(raw_input("Please print your plain text here: "), "CaesarCipher")
 		d.key = int(raw_input("What key do you want to use? "))
-		d.cypher = CaesarCipher(d.plaintext, d.key, IsUpper(d.plaintext))
-		print "This is the plain text: \n %s \n This is the Cypher Text:\n%s" % (d.plaintext, d.cypher)
+		d.cypher = CaesarCipher(d.plaintext, d.key)
+		print "This is the plain text: \n %s \n This is the Cypher Text: \n%s" % (d.plaintext, d.cypher)
 		exit
-	elif answer == '3':
-		d = Cyphertext(raw_input("please input the cypher text here: "), "CeasarCrackASCII")
-		print "Offset : Crack"
-		for key in range(-255,0):
-			d.key = key
-			d.cypher = CaesarCipherASCII(d.plaintext,d.key)
-			print "%r: %r" % (d.key, d.cypher)
-		exit
-	elif answer == '4':
-		d = Cyphertext(raw_input("please input the cypher text here: "), "CeasarCrack")
-		print "Offset : Crack"
-		if IsUpper(d.plaintext):
-			Rng = range(-51,0)
+	elif answer == '2':
+		d = CypherText(raw_input("please input the cypher text here: "), "CeasarCrack")	
+		if d.plaintext.lower() == d.plaintext or d.plaintext.upper() == d.plaintext:
+			Rng = range(-25,1)
 		else:
-			Rng = range(-25,0)
+			Rng = range(-51,1)
+		print "Offset : Crack"	
 		for key in Rng:
 			d.key = key
-			d.cypher = CaesarCipher(d.plaintext,d.key,IsUpper(d.plaintext))
-			print "%r: %r" % (d.key, d.cypher )
+			d.cypher = CaesarCipher(d.plaintext,d.key)
+			print "%r: %r" % (d.key, d.cypher)
 		exit
-	elif answer == '5':
-		print 'Adios! Cesar'
+	elif answer == '3':
+		print 'Adios, Caesar!'
 		return none
 	else:
 		print "eh? What was that? didn't hear you!"
 
-def AlphaNumDict(UpCase = False):
-	#creating two dictionarys, one that will map chars to a number
-	#and another that will map number to chars
-	alphabet = "abcdefghijklmnopqrstuvwxyz"
-	if UpCase:
-		alphabet = alphabet + alphabet.upper()
-	alphabet = list(alphabet)
-	alphanum = {}
-	numalpha = {}
-	index = 0
-	for char in alphabet:
-		alphanum[char] = index
-		numalpha[index] = char
-		index = index + 1
-	return (alphanum, numalpha)
-
-def CaesarCipherASCII( plaintext, key):
+def CaesarCipher(plaintext, key):
 	#the purpose of this is to either create a Caesar Cipher or decrypt one by moving each letter
 	#key number of places (if key is < 0, then we are moving backwards it)
-	#this cypher uses all 256 characters in ASCII
-	plaintextlist = list(plaintext)
-	cypherlist = []
-	
-	for char in plaintextlist:
-		cypherlist.append(chr((ord(char) + key) % 256))
-		
-	return ''.join(cypherlist)
+	#this cypher will scramble symbols and numbers into a different range then alpha range
+	if plaintext.lower() == plaintext:
+		#all lower case
+		for char in range(0,len(plaintext)):
+			#-97 to get only lower case, adding key, mod 26, then + 97 for proper ASCI
+			plaintext = plaintext[:char] +  chr((((ord(plaintext[char])- 97) + key) % 26) + 97) + plaintext[char + 1:]
+			
+	elif plaintext.upper() == plaintext:
+		#all upper case
+		for char in range(0,len(plaintext)):
+			#-65 to get only upper case chars, adding key, mod 26, then + 65 for proper ASCI
+			plaintext = plaintext[:char] +  chr((((ord(plaintext[char])- 65) + key) % 26) + 65) + plaintext[char + 1:] 
+	else:
+		#Both upper and lower case
+		for char in range(0,len(plaintext)):
+			ch = (((ord(plaintext[char])- 65) + key) % 58) + 65
+			if ch in range(91,97): # moving through the [, \\ , ], ^,_,' of ASCII
+				ch = ch + key/abs(key) * 6
+			plaintext = plaintext[:char] +  chr(ch) + plaintext[char + 1:] 
+	return plaintext
 
-def CaesarCipher(plaintext, key, UpCase = False):
-	# the purpose of this is to either create a Caesar Cipher or decrypt on by moving each letter
-	# key number of places (if key is < 0, then we are decrypting it)
-	# this cypher uses on 26 characters of the alphabet
-	plaintextlist = list(plaintext)
-	cypherlist = []
-	alphanum, numalpha = AlphaNumDict(UpCase)
-	for char in plaintextlist:
-		if char.isdigit():
-			cypherlist.append(str((int(char) + key) % 10))
-		elif char in alphanum:
-			cypherlist.append(numalpha[(alphanum[char] + key) % (len(alphanum)-1)])
-		else:
-			cypherlist.append(char)
-	return ''.join(cypherlist)
-
-def AlphaAlphaDict(Upcase = False):
+def AlphaDict(Upcase = False):
 	#generates a dict with the same key and value pair
 	alphabet = "abcdefghijklmnopqrstuvwxyz"
 	if Upcase:
 		alphabet = alphabet + alphabet.upper()
-	alphabet = list(alphabet)
-	AlphaAlpha = {}
-	for char in alphabet:
-		AlphaAlpha[char] = char
-	return AlphaAlpha
+	return {al:al for al in list(alphabet)}
 
-def IsUpper(Str):
-	#Checks if there are uppper case letters in a string
-	if Str.find(Str.lower()) == Str.find(Str.upper()) or Str.find(Str.upper()) == 0:
-		return True
-	return False
 def partword(Word):
 	i=0
-	Rng = range(i,len(Word))
+	Rng = range(i,len(Word)+1)
 	PrintWord = ''
 	while i <= len(Word):
 		PrintWord = PrintWord + Word[i:i+5] + ' '
-		i = i + 6
+		i = i + 5
 	print PrintWord
 	
 def SubOption():
@@ -158,30 +135,25 @@ def SubOption():
 		exit
 	
 def SubAlpha(alpha={}):
-	#allows users to manually input values into alpha
-	map = alpha
 	while True:
-		print map.keys()
-		print map.values()
-		print "type qq to quit"
+		print alpha.keys()
+		print alpha.values()
+		print "hit enter to quit"
 		key = raw_input("What character do you want to replace? > ")
-		if key == 'qq':
+		if key == '':
 			break
-		value = raw_input("And what do you want to replace it with? >")
-		if key == 'qq':
+		value = raw_input("And what do you want to replace it with? > ")
+		if key == '':
 			break
 		alpha[key] = value
-		map[key] = value
 	return alpha
 	
 def SubCypher(plaintext, alpha={}):
 	#This does a substitution method
 	#it returns the cypher and the dictionary used
-	plaintextlist = list(plaintext)
-	cypherlist = []
-	for char in plaintextlist:
-		cypherlist.append(alpha.get(char,' '))
-	return (''.join(cypherlist))
+	for i in range(0,len(plaintext)):
+		plaintext = plaintext[:i] +  alpha.get(plaintext[i],plaintext[i]) + plaintext[char + 1:] 
+	return  plaintext
 	
 def BuildAlpha(cypher, word, alpha={}):
 	#checks to see if the cypher word is mapped to the proper word or blanke
