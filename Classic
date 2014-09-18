@@ -76,7 +76,10 @@ def CaesarOption():
 	#	d = CypherText("xvgtqihgyjvbsddg", "VigenereCrack") #taco
 		d = CypherText("ubsyvkmhvyrrtsbbcrdsndwrtshxmbufrmxgabnvmircewerucamlyzbrvfwivvmlyzwapspyogsslechbgcubsvyczqrcwrmhvcxgooyvcydspomtqfpyqkgbcmerucadlcaflrsuqjrbhceqesfcehuoqmdstorcdoymeqqwaglgovggsmdabbigztbbqyfwbxwmgfpowgztyeilosrkgfahuovqfogswruqnvpwfvrnmpqqgsslatgrmqubsvyczqrswcjdeowqqroihqdspdibffnxwgztbbqyfwbxus", "VigenereCrack")	
 	#	print VigR(d.plaintext)
-		Kasisiki(d.plaintext)
+		(g1,g2,g3)  = Kasisiki(d.plaintext)
+		d.key = Kasisiki2(d.plaintext, g1[0])
+		
+		print "Ah,here we go: %r" % d.key
 	elif answer == '5':
 		print 'Adios, Caesar!'
 		return none
@@ -141,14 +144,54 @@ def Kasisiki(cypher):
 		for i in range(1, min(len(cypher),52)):
 			result = StringSearch( cypher,cypher[ i : i + SC ])
 			if result:
-				print "this is the Search: %r \t and locations: %r len %r" % (cypher[ i : i + SC ], result, len(result))
 				for i in range(0,len(result)-1):
-					diffdict[result[i+1] - result[i]] = diffdict.get(result[i+1] - result[i],0) + 1
 					difflist.append(result[i+1] - result[i])
-	
-	difflist = list(set(difflist))
-	difflist.sort()
-	
+	difflist2 = list(set(difflist))
+	difflist2.sort()
+	g1 = (0,0)
+	g2 = (0,0)
+	g3 = (0,0)
+	for i in difflist:
+		d = maxgcd(i,difflist2)
+		diffdict[d] = diffdict.get(d,0) + 1
+		if g3[1] < diffdict[d]:
+			if g1[1] < diffdict[d]:
+				g1 = (d, diffdict[d])
+			if g2[1] < diffdict[d] and g1[0] != d :
+				g2 = (d,diffdict[d])
+			if g3[1] < diffdict[d] and g1[0]!= d and g2[0]!=d:
+				g3 = (d, diffdict[d])
+	print "Here are the top 3 guesses, along with frequency count: \n1st: %r\n2nd: %r\n3rd %r\n" % (g1,g2,g3)
+	return (g1,g2,g3)
+def Kasisiki2(cypher, key):
+	# this is the second step, where we break the cypher up into multiple (one row per 'key' character)
+	# then look for frequency anlysis  (ie, e shows up the most time, well then work from there
+	d = ['a'] * key
+	results = ['a'] * key
+	ky = 0
+	cypher.lower()
+	print cypher, "\n"
+	while ky < key:
+		i = ky
+		print ky
+		substr = ''
+		while i < len(cypher):
+			substr += cypher[i]
+			i += key
+		substr = list(substr)
+		x = ('a',0)
+		for i in list('abcdefghijklmnopqrstuvwxyz'):
+		#	print i, substr.count(i)
+			if substr.count(i) > x[1]:
+				x = (i, substr.count(i))
+		
+		d[ky] = x 
+		results[ky] = chr((ord(x[0]) - 97 - 4) % 26 + 97)
+		ky += 1
+
+	print d
+	print results
+	return ''.join(results)
 	#for i in diffdict:
 	#	gcddict[gcd( i, diffdict[i]
 	
